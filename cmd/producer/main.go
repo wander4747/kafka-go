@@ -9,7 +9,7 @@ func main() {
 	deliveryChan := make(chan kafka.Event)
 
 	producer := NewKafkaProducer()
-	Publish("message", "test", producer, nil, deliveryChan)
+	Publish("Hello Kafka", "test", producer, []byte("key1"), deliveryChan)
 
 	go DeliveryReport(deliveryChan)
 
@@ -18,7 +18,10 @@ func main() {
 
 func NewKafkaProducer() *kafka.Producer {
 	configMap := &kafka.ConfigMap{
-		"bootstrap.servers": "container-kafka:9092",
+		"bootstrap.servers":   "container-kafka:9092",
+		"delivery.timeout.ms": "0",
+		"acks":                "all",
+		"enable.idempotence":  "true",
 	}
 
 	p, err := kafka.NewProducer(configMap)
